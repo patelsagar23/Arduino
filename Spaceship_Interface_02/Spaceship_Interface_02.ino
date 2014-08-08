@@ -20,11 +20,11 @@ void loop(){
     digitalWrite(4,LOW);
     digitalWrite(5,HIGH);
     
-    delay(25);
+    delay(250);
     
     digitalWrite(4,HIGH);
     digitalWrite(5,LOW);
     
-    delay(25);
+    delay(250);
   }
 }
