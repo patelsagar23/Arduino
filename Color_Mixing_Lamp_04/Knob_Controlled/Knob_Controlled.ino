@@ -40,10 +40,12 @@ void loop(){
   
   //Printing the vlaues to the serial monitor
   Serial.print("Red Value: ");
-  Serial.print(redmap \t);
-  Serial.print("Green Value: ");
-  Serial.print(greenmap \t);
-  Serial.print("Blue Value: ");
+  Serial.print(redmap);
+  Serial.print("\t Green Value: ");
+  Serial.print(greenmap);
+  Serial.print("\t Blue Value: ");
   Serial.println(bluemap);
+  
+  delay(5);
 }
   
