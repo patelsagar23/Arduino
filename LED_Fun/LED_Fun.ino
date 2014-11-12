@@ -164,7 +164,7 @@ void loop(){
       }
     }
 
-    Serial.println(flashing);
+    /*Serial.println(flashing);*/
 
     //Printing the vlaues to the serial monitor
     /*Serial.print("Red Value: ");

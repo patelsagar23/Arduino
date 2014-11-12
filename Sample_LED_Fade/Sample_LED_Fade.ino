@@ -1,16 +1,28 @@
+//Trying to add start and stop with a button
+int fade = 0;
+int fadeswitch = 3;
+int fadestate = 0;
+
 // Output
 int redPin = 11;   // Red LED,   connected to digital pin 9
 int grnPin = 9;  // Green LED, connected to digital pin 10
 int bluPin = 10;  // Blue LED,  connected to digital pin 11
 
 // Color arrays
-int black[3]  = { 0, 0, 0 };
-int white[3]  = { 100, 100, 100 };
-int red[3]    = { 100, 0, 0 };
-int green[3]  = { 0, 100, 0 };
-int blue[3]   = { 0, 0, 100 };
-int yellow[3] = { 40, 95, 0 };
-int dimWhite[3] = { 30, 30, 30 };
+int black[3]  = { 
+  0, 0, 0 };
+int white[3]  = { 
+  100, 100, 100 };
+int red[3]    = { 
+  100, 0, 0 };
+int green[3]  = { 
+  0, 100, 0 };
+int blue[3]   = { 
+  0, 0, 100 };
+int yellow[3] = { 
+  40, 95, 0 };
+int dimWhite[3] = { 
+  30, 30, 30 };
 // etc.
 
 // Set initial color
@@ -33,59 +45,81 @@ int prevB = bluVal;
 // Set up the LED outputs
 void setup()
 {
+  pinMode(fadeswitch, INPUT);
   pinMode(redPin, OUTPUT);   // sets the pins as output
   pinMode(grnPin, OUTPUT);   
   pinMode(bluPin, OUTPUT); 
 
-  if (DEBUG) {           // If we want to see values for debugging...
-    Serial.begin(9600);  // ...set up the serial ouput 
-  }
+  /*if (DEBUG) {  */  // If we want to see values for debugging...
+  Serial.begin(9600);  // ...set up the serial ouput 
+  /* }*/
 }
 
 // Main program: list the order of crossfades
 void loop()
 {
-  crossFade(red);
-  crossFade(green);
-  crossFade(blue);
-  crossFade(yellow);
+  fadestate = digitalRead(fadeswitch);
+  if (fadestate == HIGH){
+    fade++;
+    delay(500);
+  }
+      Serial.println(fade);
+  
+  if (fade == 2){
+    fade = 0;
+  }
 
-  if (repeat) { // Do we loop a finite number of times?
-    j += 1;
-    if (j >= repeat) { // Are we there yet?
-      exit(j);         // If so, stop.
+  if (fade == 0){
+    redVal = black[0];
+    grnVal = black[1]; 
+    bluVal = black[2];
+    analogWrite(redPin, redVal);   // Write current values to LED pins
+    analogWrite(grnPin, grnVal);      
+    analogWrite(bluPin, bluVal); 
+  }
+
+  if (fade == 1) {
+    crossFade(red);
+    crossFade(green);
+    crossFade(blue);
+    crossFade(yellow);
+
+    if (repeat) { // Do we loop a finite number of times?
+      j += 1;
+      if (j >= repeat) { // Are we there yet?
+        exit(j);         // If so, stop.
+      }
     }
   }
 }
-
 /* BELOW THIS LINE IS THE MATH -- YOU SHOULDN'T NEED TO CHANGE THIS FOR THE BASICS
-* 
-* The program works like this:
-* Imagine a crossfade that moves the red LED from 0-10, 
-*   the green from 0-5, and the blue from 10 to 7, in
-*   ten steps.
-*   We'd want to count the 10 steps and increase or 
-*   decrease color values in evenly stepped increments.
-*   Imagine a + indicates raising a value by 1, and a -
-*   equals lowering it. Our 10 step fade would look like:
-* 
-*   1 2 3 4 5 6 7 8 9 10
-* R + + + + + + + + + +
-* G   +   +   +   +   +
-* B     -     -     -
-* 
-* The red rises from 0 to 10 in ten steps, the green from 
-* 0-5 in 5 steps, and the blue falls from 10 to 7 in three steps.
-* 
-* In the real program, the color percentages are converted to 
-* 0-255 values, and there are 1020 steps (255*4).
-* 
-* To figure out how big a step there should be between one up- or
-* down-tick of one of the LED values, we call calculateStep(), 
-* which calculates the absolute gap between the start and end values, 
-* and then divides that gap by 1020 to determine the size of the step  
-* between adjustments in the value.
-*/
+ * 
+ * The program works like this:
+ * Imagine a crossfade that moves the red LED from 0-10, 
+ *   the green from 0-5, and the blue from 10 to 7, in
+ *   ten steps.
+ *   We'd want to count the 10 steps and increase or 
+ *   decrease color values in evenly stepped increments.
+ *   Imagine a + indicates raising a value by 1, and a -
+ *   equals lowering it. Our 10 step fade would look like:
+ * 
+ *   1 2 3 4 5 6 7 8 9 10
+ * R + + + + + + + + + +
+ * G   +   +   +   +   +
+ * B     -     -     -
+ * 
+ * The red rises from 0 to 10 in ten steps, the green from 
+ * 0-5 in 5 steps, and the blue falls from 10 to 7 in three steps.
+ * 
+ * In the real program, the color percentages are converted to 
+ * 0-255 values, and there are 1020 steps (255*4).
+ * 
+ * To figure out how big a step there should be between one up- or
+ * down-tick of one of the LED values, we call calculateStep(), 
+ * which calculates the absolute gap between the start and end values, 
+ * and then divides that gap by 1020 to determine the size of the step  
+ * between adjustments in the value.
+ */
 
 int calculateStep(int prevValue, int endValue) {
   int step = endValue - prevValue; // What's the overall gap?
@@ -96,10 +130,10 @@ int calculateStep(int prevValue, int endValue) {
 }
 
 /* The next function is calculateVal. When the loop value, i,
-*  reaches the step size appropriate for one of the
-*  colors, it increases or decreases the value of that color by 1. 
-*  (R, G, and B are each calculated separately.)
-*/
+ *  reaches the step size appropriate for one of the
+ *  colors, it increases or decreases the value of that color by 1. 
+ *  (R, G, and B are each calculated separately.)
+ */
 
 int calculateVal(int step, int val, int i) {
 
@@ -122,10 +156,10 @@ int calculateVal(int step, int val, int i) {
 }
 
 /* crossFade() converts the percentage colors to a 
-*  0-255 range, then loops 1020 times, checking to see if  
-*  the value needs to be updated each time, then writing
-*  the color values to the correct pins.
-*/
+ *  0-255 range, then loops 1020 times, checking to see if  
+ *  the value needs to be updated each time, then writing
+ *  the color values to the correct pins.
+ */
 
 void crossFade(int Color[3]) {
   // Convert to 0-255
@@ -145,6 +179,7 @@ void crossFade(int Color[3]) {
     analogWrite(redPin, redVal);   // Write current values to LED pins
     analogWrite(grnPin, grnVal);      
     analogWrite(bluPin, bluVal); 
+
 
     delay(wait); // Pause for 'wait' milliseconds before resuming the loop
 
@@ -167,5 +202,16 @@ void crossFade(int Color[3]) {
   prevG = grnVal; 
   prevB = bluVal;
   delay(hold); // Pause for optional 'wait' milliseconds before resuming the loop
+    fadestate = digitalRead(fadeswitch);
+  if (fadestate == HIGH){
+    fade++;
+    delay(500);
+  }
+  if (fade == 2){
+    fade = 0;
+  }
 }
+
+
+
 
