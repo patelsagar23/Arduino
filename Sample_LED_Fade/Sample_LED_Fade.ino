@@ -207,6 +207,9 @@ void crossFade(int Color[3]) {
     fade++;
     delay(500);
   }
+  if(fade==1){
+    i=1020;
+  }
   if (fade == 2){
     fade = 0;
   }
