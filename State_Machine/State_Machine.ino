@@ -145,7 +145,7 @@ void loop(){
       break;    
     }
 
-   /* if(digitalRead(pattern == HIGH)){
+    if(digitalRead(pattern) == HIGH){
       delay(500);
       Serial.println("Pattern button has been pressed");
       currPattern ++;
@@ -156,7 +156,7 @@ void loop(){
       if(currPattern == 2){
         Serial.println("Current pattern is flashing");
       }
-    }*/
+    }
 
     //Cases that write the values to the LED
     switch (currPattern) {
