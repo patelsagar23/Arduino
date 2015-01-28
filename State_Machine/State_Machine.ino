@@ -3,6 +3,14 @@ long interval = 1000;
 long previousMillis = 0;
 long currMillis = 0;
 
+//Constants for fading the LED
+float fadeBrightness = .05;
+float fadeAmount = .05;
+float redFade = 0;
+float greenFade = 0;
+float blueFade = 0;
+int direct = 1;
+
 //LED Pins
 const int redPin = 11;
 const int bluPin = 10;
@@ -156,6 +164,9 @@ void loop(){
       if(currPattern == 2){
         Serial.println("Current pattern is flashing");
       }
+      if(currPattern == 3){
+        Serial.println("Current pattern is fading");
+      }
     }
 
     //Cases that write the values to the LED
@@ -192,6 +203,35 @@ void loop(){
       }
       break;
 
+    case 3:
+      if (fadeBrightness == 1){
+        direct = 2;
+      }
+      if (fade
+      
+      // reverse the direction of the fading 
+      if (fadeBrightness > 0){
+        fadeBrightness = fadeBrightness + fadeAmount;
+      }
+      if (fadeBrightness <= 1){
+        fadeBrightness = fadeBrightness - fadeAmount;
+      }
+
+      redFade = redVal * fadeBrightness;
+      greenFade = grnVal * fadeBrightness;
+      blueFade = bluVal * fadeBrightness;
+
+      digitalWrite(redPin,redFade);
+      digitalWrite(bluPin,blueFade);
+      digitalWrite(grnPin,greenFade);
+
+      //Serial.println(redFade);
+      //Serial.println(blueFade);
+      //Serial.println(greenFade);
+      Serial.println(fadeBrightness);
+
+      break;
+
     default:
       currPattern = 1;
       break;
@@ -213,6 +253,8 @@ void loop(){
     //Serial.println("OFF");
   }
 }
+
+
 
 
 
