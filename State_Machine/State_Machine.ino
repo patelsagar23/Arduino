@@ -4,8 +4,8 @@ long previousMillis = 0;
 long currMillis = 0;
 
 //Constants for fading the LED
-float fadeBrightness = .05;
-float fadeAmount = .05;
+int fadeBrightness = 5;
+int fadeAmount = 1;
 float redFade = 0;
 float greenFade = 0;
 float blueFade = 0;
@@ -135,21 +135,21 @@ void loop(){
 
     switch (currColor) {
     case 1:
-      redVal = red[0];
-      grnVal = red[1];
-      bluVal = red[2];
+      redVal = red[0] * 255 / 100;
+      grnVal = red[1] * 255 / 100;
+      bluVal = red[2] * 255 / 100;
       break;
 
     case 2:
-      redVal = green[0];
-      grnVal = green[1];
-      bluVal = green[2];
+      redVal = green[0] * 255 / 100;
+      grnVal = green[1] * 255 / 100;
+      bluVal = green[2] * 255 / 100;
       break;
 
     case 3:
-      redVal = blue[0];
-      grnVal = blue[1];
-      bluVal = blue[2];
+      redVal = blue[0] * 255 / 100;
+      grnVal = blue[1] * 255 / 100;
+      bluVal = blue[2] * 255 / 100;
       break;    
     }
 
@@ -204,31 +204,36 @@ void loop(){
       break;
 
     case 3:
-      if (fadeBrightness == 1){
+      if (fadeBrightness == 100){
         direct = 2;
       }
-      if (fade
+      if (fadeBrightness == 0){
+        direct = 1;
+      }
       
-      // reverse the direction of the fading 
-      if (fadeBrightness > 0){
+      switch(direct) {
+        case 1:
         fadeBrightness = fadeBrightness + fadeAmount;
-      }
-      if (fadeBrightness <= 1){
+        break;
+        
+        case 2:
         fadeBrightness = fadeBrightness - fadeAmount;
+        break;
       }
 
-      redFade = redVal * fadeBrightness;
-      greenFade = grnVal * fadeBrightness;
-      blueFade = bluVal * fadeBrightness;
+      redFade = redVal * fadeBrightness / 100;
+      greenFade = grnVal * fadeBrightness / 100;
+      blueFade = bluVal * fadeBrightness / 100;
 
-      digitalWrite(redPin,redFade);
-      digitalWrite(bluPin,blueFade);
-      digitalWrite(grnPin,greenFade);
+      analogWrite(redPin,redFade);
+      analogWrite(bluPin,blueFade);
+      analogWrite(grnPin,greenFade);
 
-      //Serial.println(redFade);
+      Serial.println(redFade);
       //Serial.println(blueFade);
       //Serial.println(greenFade);
-      Serial.println(fadeBrightness);
+      //Serial.println(fadeBrightness);
+      //Serial.println(direct);
 
       break;
 
