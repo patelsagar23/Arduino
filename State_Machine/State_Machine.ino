@@ -55,9 +55,12 @@ int flashState = 1;
 //Constants for crossfade
 int i = 0;
 int crossState = 1;
-int wait = 25;
+int wait = 10;
 int previ = 1;
 int DEBUGcount = 1;
+int redValF = 255;
+int grnValF = 0;
+int bluValF = 0;
 
 void setup(){
   if (Monitor == 1){
@@ -243,53 +246,60 @@ void loop(){
       currMillis = millis();
       if(currMillis - previousMillis > wait){
         previousMillis = currMillis;
-        previ = i;
-        i += 1; 
-        //Serial.println(i);
-        //Serial.println(previ);
+        i ++; 
+        /*Serial.print(previ);
+        Serial.print("\t");
+        Serial.println(i);*/
       }
 
       if(previ != i){
-        if (i < 128) // First phase
+        //Serial.println(i);
+        previ = i;   // Sets prev i back to i
+        if (i < 257) // First phase
         {
-          redVal   -= 1; 
-          grnVal += 1; 
-          bluVal   = 1; 
+          redValF   -= 1; 
+          grnValF += 1; 
+          bluValF   = 0; 
         }
-        else if (i < 255) // Second phase
+        
+        else if (i < 512) // Second phase
         {
-          redVal    = 1; 
-          grnVal -= 1;
-          bluVal  += 1;
+          redValF    = 0; 
+          grnValF -= 1;
+          bluValF  += 1;
         } 
-        else if (i < 382) // Third phase
+        
+        else if (i < 767) // Third phase
         {
-          redVal  += 1;
-          grnVal = 1; 
-          bluVal -= 1; 
+          redValF  += 1;
+          grnValF = 0; 
+          bluValF -= 1; 
         }
+        
         else // Re-set the counter
         {
           i = 1;
         }  
       }
 
-      analogWrite(redPin,   redVal); 
-      analogWrite(grnPin, grnVal); 
-      analogWrite(bluPin,  bluVal);
+      analogWrite(redPin,   redValF); 
+      analogWrite(grnPin, grnValF); 
+      analogWrite(bluPin,  bluValF);
 
-        Serial.print(i);     
+        /*Serial.print(i);     
         Serial.print("\t");    
         Serial.print("R:");    
-        Serial.print(redVal);  
+        Serial.print(redValF);  
         Serial.print("\t");    
         Serial.print("G:");    
-        Serial.print(grnVal);
+        Serial.print(grnValF);
         Serial.print("\t");    
         Serial.print("B:");    
-        Serial.println(bluVal);   
+        Serial.println(bluValF);*/  
 
-      //Serial.println(i);
+      /*Serial.print(previ);
+      Serial.print("\t");
+      Serial.println(i);*/
       break;
 
     default:
