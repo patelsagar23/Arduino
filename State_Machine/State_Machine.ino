@@ -37,6 +37,11 @@ int redVal = black[0];
 int grnVal = black[1];
 int bluVal = black[2];
 
+//Set the initial mapped values
+int redValM;
+int grnValM;
+int bluValM;
+
 //Buttons
 const int power = 2;
 const int pattern = 3;
@@ -62,6 +67,9 @@ int redValF = 255;
 int grnValF = 0;
 int bluValF = 0;
 
+//Constants for colorToggle
+int toggleWait = 2000;
+
 void setup(){
   if (Monitor == 1){
     Serial.begin(9600);
@@ -85,9 +93,113 @@ void loop(){
   //Serial.println(powerState);
   //Serial.println(currColor);
 
+  //Maps the values of redVal, bluVal, and grnVal
+  redValM = map(redVal, 0, 100, 0, 255);
+  bluValM = map(bluVal, 0, 100, 0, 255);
+  grnValM = map(grnVal, 0, 100, 0, 255);
+
   if (powerState == 1){
 
     //Serial.println("ON");
+
+    switch (currColor) {
+    case 1:
+      redVal = red[0];
+      grnVal = red[1];
+      bluVal = red[2];
+      break;
+
+    case 2:
+      redVal = green[0];
+      grnVal = green[1];
+      bluVal = green[2];
+      break;
+
+    case 3:
+      redVal = blue[0];
+      grnVal = blue[1];
+      bluVal = blue[2];
+      break;    
+
+    default:
+      currColor = 1;
+      break;
+    }
+
+    //Cases that write the values to the LED
+    switch (currPattern) {
+    case 1:
+      digitalWrite(redPin,redValM);
+      digitalWrite(grnPin,grnValM);
+      digitalWrite(bluPin,bluValM);
+      break;
+
+    case 2:
+      currMillis = millis();
+      if(currMillis - previousMillis > interval){
+        previousMillis = currMillis;
+        if(flashState == 1){
+          flashState = 2;
+        }
+        else{
+          flashState =1;
+        }
+      }
+      switch(flashState) {
+      case 1:
+        digitalWrite(redPin,redValM);
+        digitalWrite(grnPin,grnValM);
+        digitalWrite(bluPin,bluValM);
+        break;
+
+      case 2:
+        digitalWrite(redPin,LOW);
+        digitalWrite(grnPin,LOW);
+        digitalWrite(bluPin,LOW);
+        break;
+      }
+      break;
+
+    case 3:
+      if (fadeBrightness == 100 * fadeAmount){
+        direct = 2;
+      }
+      if (fadeBrightness == 0){
+        direct = 1;
+      }
+
+      switch(direct) {
+      case 1:
+        fadeBrightness = fadeBrightness + 1;
+        break;
+
+      case 2:
+        fadeBrightness = fadeBrightness - 1;
+        break;
+      }
+
+      redFade = redVal * fadeBrightness / 100 / fadeAmount;
+      greenFade = grnVal * fadeBrightness / 100 / fadeAmount;
+      blueFade = bluVal * fadeBrightness / 100 / fadeAmount;
+
+      analogWrite(redPin,redFade);
+      analogWrite(bluPin,blueFade);
+      analogWrite(grnPin,greenFade);
+
+      //Turning on debug in this area will affect the fade
+      //speed due to the Serial.println command speed limit
+      //Serial.println(redFade);
+      //Serial.println(blueFade);
+      //Serial.println(greenFade);
+      //Serial.println(fadeBrightness);
+      //Serial.println(direct);
+
+      break;
+
+    default:
+      currPattern = 1;
+      break;
+    }
 
     //Checks to see if power is being pushed
     if(digitalRead(power) == HIGH){
@@ -129,26 +241,6 @@ void loop(){
         }
       }
 
-      switch (currColor) {
-      case 1:
-        redVal = red[0] * 255 / 100;
-        grnVal = red[1] * 255 / 100;
-        bluVal = red[2] * 255 / 100;
-        break;
-
-      case 2:
-        redVal = green[0] * 255 / 100;
-        grnVal = green[1] * 255 / 100;
-        bluVal = green[2] * 255 / 100;
-        break;
-
-      case 3:
-        redVal = blue[0] * 255 / 100;
-        grnVal = blue[1] * 255 / 100;
-        bluVal = blue[2] * 255 / 100;
-        break;    
-      }
-
       if(digitalRead(pattern) == HIGH){
         delay(500);
         Serial.println("Pattern button has been pressed");
@@ -165,80 +257,6 @@ void loop(){
         }
       }
 
-      //Cases that write the values to the LED
-      switch (currPattern) {
-      case 1:
-        digitalWrite(redPin,redVal);
-        digitalWrite(grnPin,grnVal);
-        digitalWrite(bluPin,bluVal);
-        break;
-
-      case 2:
-        currMillis = millis();
-        if(currMillis - previousMillis > interval){
-          previousMillis = currMillis;
-          if(flashState == 1){
-            flashState = 2;
-          }
-          else{
-            flashState =1;
-          }
-        }
-        switch(flashState) {
-        case 1:
-          digitalWrite(redPin,redVal);
-          digitalWrite(grnPin,grnVal);
-          digitalWrite(bluPin,bluVal);
-          break;
-
-        case 2:
-          digitalWrite(redPin,LOW);
-          digitalWrite(grnPin,LOW);
-          digitalWrite(bluPin,LOW);
-          break;
-        }
-        break;
-
-      case 3:
-        if (fadeBrightness == 100 * fadeAmount){
-          direct = 2;
-        }
-        if (fadeBrightness == 0){
-          direct = 1;
-        }
-
-        switch(direct) {
-        case 1:
-          fadeBrightness = fadeBrightness + 1;
-          break;
-
-        case 2:
-          fadeBrightness = fadeBrightness - 1;
-          break;
-        }
-
-        redFade = redVal * fadeBrightness / 100 / fadeAmount;
-        greenFade = grnVal * fadeBrightness / 100 / fadeAmount;
-        blueFade = bluVal * fadeBrightness / 100 / fadeAmount;
-
-        analogWrite(redPin,redFade);
-        analogWrite(bluPin,blueFade);
-        analogWrite(grnPin,greenFade);
-
-        //Turning on debug in this area will affect the fade
-        //speed due to the Serial.println command speed limit
-        //Serial.println(redFade);
-        //Serial.println(blueFade);
-        //Serial.println(greenFade);
-        //Serial.println(fadeBrightness);
-        //Serial.println(direct);
-
-        break;
-
-      default:
-        currPattern = 1;
-        break;
-      }
       break;
 
     case 2:
@@ -248,8 +266,8 @@ void loop(){
         previousMillis = currMillis;
         i ++; 
         /*Serial.print(previ);
-        Serial.print("\t");
-        Serial.println(i);*/
+         Serial.print("\t");
+         Serial.println(i);*/
       }
 
       if(previ != i){
@@ -261,21 +279,21 @@ void loop(){
           grnValF += 1; 
           bluValF   = 0; 
         }
-        
+
         else if (i < 512) // Second phase
         {
           redValF    = 0; 
           grnValF -= 1;
           bluValF  += 1;
         } 
-        
+
         else if (i < 767) // Third phase
         {
           redValF  += 1;
           grnValF = 0; 
           bluValF -= 1; 
         }
-        
+
         else // Re-set the counter
         {
           i = 1;
@@ -286,20 +304,31 @@ void loop(){
       analogWrite(grnPin, grnValF); 
       analogWrite(bluPin,  bluValF);
 
-        /*Serial.print(i);     
-        Serial.print("\t");    
-        Serial.print("R:");    
-        Serial.print(redValF);  
-        Serial.print("\t");    
-        Serial.print("G:");    
-        Serial.print(grnValF);
-        Serial.print("\t");    
-        Serial.print("B:");    
-        Serial.println(bluValF);*/  
+       Serial.print(i);     
+       Serial.print("\t");    
+       Serial.print("R:");    
+       Serial.print(redValF);  
+       Serial.print("\t");    
+       Serial.print("G:");    
+       Serial.print(grnValF);
+       Serial.print("\t");    
+       Serial.print("B:");    
+       Serial.println(bluValF);
 
       /*Serial.print(previ);
-      Serial.print("\t");
-      Serial.println(i);*/
+       Serial.print("\t");
+       Serial.println(i);*/
+      break;
+
+    case 3:
+      currMillis = millis();
+      if(currMillis - previousMillis > toggleWait){
+        previousMillis = currMillis;
+        currColor ++;
+      }
+      analogWrite(redPin,   redValM); 
+      analogWrite(grnPin, grnValM); 
+      analogWrite(bluPin,  bluValM);
       break;
 
     default:
@@ -326,6 +355,12 @@ void loop(){
     //Serial.println("OFF");
   }
 }
+
+
+
+
+
+
 
 
 
