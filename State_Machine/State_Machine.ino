@@ -28,9 +28,13 @@ int green[3]  = {
 int blue[3]   = { 
   0, 0, 100 };
 int yellow[3] = { 
-  40, 95, 0 };
+  100, 100, 0 };
 int dimWhite[3] = { 
   30, 30, 30 };
+int purple[3] = {
+  100, 0, 100 };
+int orange [3] = {
+  100, 50, 0 };
 
 //Set the initial colors
 int redVal = black[0];
@@ -97,6 +101,15 @@ void loop(){
   redValM = map(redVal, 0, 100, 0, 255);
   bluValM = map(bluVal, 0, 100, 0, 255);
   grnValM = map(grnVal, 0, 100, 0, 255);
+  
+  /*Serial.print("Red = ");
+  Serial.print(redValM);
+  Serial.print("\t");
+  Serial.print("Blue = ");
+  Serial.print(bluValM);
+  Serial.print("\t");
+  Serial.print("Green = ");
+  Serial.println(grnValM);*/
 
   if (powerState == 1){
 
@@ -110,15 +123,33 @@ void loop(){
       break;
 
     case 2:
+      redVal = orange[0];
+      grnVal = orange[1];
+      bluVal = orange[2];
+      break;
+
+    case 3:
+      redVal = yellow[0];
+      grnVal = yellow[1];
+      bluVal = yellow[2];
+      break;
+
+    case 4:
       redVal = green[0];
       grnVal = green[1];
       bluVal = green[2];
       break;
 
-    case 3:
+    case 5:
       redVal = blue[0];
       grnVal = blue[1];
       bluVal = blue[2];
+      break;
+
+    case 6:
+      redVal = purple[0];
+      grnVal = purple[1];
+      bluVal = purple[2];
       break;    
 
     default:
@@ -178,9 +209,9 @@ void loop(){
         break;
       }
 
-      redFade = redVal * fadeBrightness / 100 / fadeAmount;
-      greenFade = grnVal * fadeBrightness / 100 / fadeAmount;
-      blueFade = bluVal * fadeBrightness / 100 / fadeAmount;
+      redFade = redValM * fadeBrightness / 100 / fadeAmount;
+      greenFade = grnValM * fadeBrightness / 100 / fadeAmount;
+      blueFade = bluValM * fadeBrightness / 100 / fadeAmount;
 
       analogWrite(redPin,redFade);
       analogWrite(bluPin,blueFade);
@@ -225,19 +256,27 @@ void loop(){
         delay(500);
         Serial.println("Color button has been pressed");
         currColor++;
-        //Resets currColor if it becomes too high
-        if(currColor == 4){
-          currColor = 1;
-        }
         //Prints the new color values
         if(currColor == 1){
           Serial.println("New color is now red");
         }
-        if(currColor == 2){
+        else if(currColor == 2){
+          Serial.println("New color is now orange");
+        }
+        else if(currColor == 3){
+          Serial.println("New color is now yellow");
+        }
+        else if(currColor == 4){
           Serial.println("New color is now green");
         }
-        if(currColor == 3){
+        else if(currColor == 5){
           Serial.println("New color is now blue");
+        }
+        else if(currColor == 6){
+          Serial.println("New color is now purple");
+        }
+        else {
+          Serial.println("New color is now red");
         }
       }
 
@@ -249,11 +288,14 @@ void loop(){
         if(currPattern == 1){
           Serial.println("Current pattern is solid");
         }
-        if(currPattern == 2){
+        else if(currPattern == 2){
           Serial.println("Current pattern is flashing");
         }
-        if(currPattern == 3){
+        else if(currPattern == 3){
           Serial.println("Current pattern is fading");
+        }
+        else {
+          Serial.println("Current pattern is solid");
         }
       }
 
@@ -304,16 +346,16 @@ void loop(){
       analogWrite(grnPin, grnValF); 
       analogWrite(bluPin,  bluValF);
 
-       Serial.print(i);     
-       Serial.print("\t");    
-       Serial.print("R:");    
-       Serial.print(redValF);  
-       Serial.print("\t");    
-       Serial.print("G:");    
-       Serial.print(grnValF);
-       Serial.print("\t");    
-       Serial.print("B:");    
-       Serial.println(bluValF);
+      Serial.print(i);     
+      Serial.print("\t");    
+      Serial.print("R:");    
+      Serial.print(redValF);  
+      Serial.print("\t");    
+      Serial.print("G:");    
+      Serial.print(grnValF);
+      Serial.print("\t");    
+      Serial.print("B:");    
+      Serial.println(bluValF);
 
       /*Serial.print(previ);
        Serial.print("\t");
@@ -355,6 +397,8 @@ void loop(){
     //Serial.println("OFF");
   }
 }
+
+
 
 
 
